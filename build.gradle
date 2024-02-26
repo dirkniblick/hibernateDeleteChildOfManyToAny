@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+allprojects {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.hibernate.orm:hibernate-core:6.4.4.Final'
+    implementation 'org.apache.logging.log4j:log4j-core:2.23.0'
+    runtimeOnly 'com.h2database:h2:2.2.224'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
