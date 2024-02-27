@@ -21,13 +21,14 @@
             <property name="hibernate.connection.password" value=""/>
             <property name="hibernate.connection.pool_size" value="1"/>
             <property name="hibernate.current_session_context_class" value="thread"/>
-            <property name="hibernate.hbm2ddl.auto" value="create"/>
             <property name="hibernate.dbcp.initialSize" value="5"/>
             <property name="hibernate.dbcp.maxTotal" value="20"/>
             <property name="hibernate.dbcp.maxIdle" value="10"/>
             <property name="hibernate.dbcp.minIdle" value="5"/>
             <property name="hibernate.dbcp.maxWaitMillis" value="-1"/>
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.integrator_provider" value="com.example.hibernatepolymorph.config.ApplicationIntegratorProvider"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="LOCALDB">
@@ -48,13 +49,14 @@
             <property name="hibernate.connection.password" value=""/>
             <property name="hibernate.connection.pool_size" value="1"/>
             <property name="hibernate.current_session_context_class" value="thread"/>
-            <property name="hibernate.hbm2ddl.auto" value="create"/>
             <property name="hibernate.dbcp.initialSize" value="5"/>
             <property name="hibernate.dbcp.maxTotal" value="20"/>
             <property name="hibernate.dbcp.maxIdle" value="10"/>
             <property name="hibernate.dbcp.minIdle" value="5"/>
             <property name="hibernate.dbcp.maxWaitMillis" value="-1"/>
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.integrator_provider" value="com.example.hibernatepolymorph.config.ApplicationIntegratorProvider"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -1,3 +1,4 @@
+<!-- Reference: https://thorben-janssen.com/hibernate-logging-guide/ -->
 <Configuration monitorInterval="60">
     <Properties>
         <Property name="log-path">PropertiesConfiguration</Property>
@@ -12,23 +13,18 @@
         </Console>
     </Appenders>
     <Loggers>
-        <!-- Hibernate after 6 -->
-        <Logger name="org.hibernate" level="trace" additivity="false">
+        <Logger name="org.hibernate" level="info" additivity="false">
             <AppenderRef ref="Console-Appender"/>
         </Logger>
-<!--        <Logger name="org.hibernate.orm.jdbc.bind" level="trace" additivity="false">-->
-<!--            <AppenderRef ref="Console-Appender"/>-->
-<!--        </Logger>-->
-<!--        <Logger name="org.hibernate.stat" level="trace" additivity="false">-->
-<!--            <AppenderRef ref="Console-Appender"/>-->
-<!--        </Logger>-->
-<!--        <Logger name="org.hibernate.SQL_SLOW" level="trace" additivity="false">-->
-<!--            <AppenderRef ref="Console-Appender"/>-->
-<!--        </Logger>-->
-<!--        <Logger name="org.hibernate.cache" level="trace" additivity="false">-->
-<!--            <AppenderRef ref="Console-Appender"/>-->
-<!--        </Logger>-->
-
+        <Logger name="org.hibernate.SQL" level="trace" additivity="false">
+            <AppenderRef ref="Console-Appender"/>
+        </Logger>
+        <Logger name="org.hibernate.orm.jdbc.bind" level="trace" additivity="false">
+            <AppenderRef ref="Console-Appender"/>
+        </Logger>
+        <Logger name="org.hibernate.tool.hbm2ddl" level="trace" additivity="false">
+            <AppenderRef ref="Console-Appender"/>
+        </Logger>
         <Root level="info">
             <AppenderRef ref="Console-Appender"/>
         </Root>

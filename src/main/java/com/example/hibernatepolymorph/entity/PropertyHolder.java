@@ -1,10 +1,10 @@
 package com.example.hibernatepolymorph.entity;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Any;
@@ -14,8 +14,9 @@ import org.hibernate.annotations.AnyKeyJavaClass;
 
 import java.util.StringJoiner;
 
+
 @Entity
-@Table(name = "property_holder")
+@Table(name = "property_holder", indexes = {@Index(name = "foo", columnList = "property_id,property_type"), })
 public class PropertyHolder {
 
     @Id
@@ -23,10 +24,10 @@ public class PropertyHolder {
 
     @Any
     @AnyDiscriminator(DiscriminatorType.STRING)
-    @AnyDiscriminatorValue(discriminator = "S", entity = StringProperty.class)
-    @AnyDiscriminatorValue(discriminator = "I", entity = IntegerProperty.class)
+    @AnyDiscriminatorValue(discriminator = StringProperty.DISCRIMINATOR, entity = StringProperty.class)
+    @AnyDiscriminatorValue(discriminator = IntegerProperty.DISCRIMINATOR, entity = IntegerProperty.class)
     @AnyKeyJavaClass(Long.class)
-    @Column(name = "property_type")
+    @Column(name = "property_type", columnDefinition = "varchar(1) check (property_type in ('S','I'))")
     @JoinColumn(name = "property_id")
     private Property<?> property;
 

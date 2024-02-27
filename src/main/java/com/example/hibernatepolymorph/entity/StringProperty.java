@@ -11,6 +11,8 @@ import java.util.StringJoiner;
 @Table(name="string_property")
 public class StringProperty implements Property<String> {
 
+    public static final String DISCRIMINATOR = "S";
+
     @Id
     private Long id;
 
@@ -41,6 +43,11 @@ public class StringProperty implements Property<String> {
     @Override
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public String getDiscriminator() {
+        return DISCRIMINATOR;
     }
 
     public void setValue(String value) {

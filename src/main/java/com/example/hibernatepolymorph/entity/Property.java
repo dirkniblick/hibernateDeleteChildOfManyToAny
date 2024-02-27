@@ -7,4 +7,6 @@ public interface Property<T> {
     String getName();
 
     T getValue();
+
+    String getDiscriminator();
 }

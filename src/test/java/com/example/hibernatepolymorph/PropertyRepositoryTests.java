@@ -3,12 +3,18 @@ package com.example.hibernatepolymorph;
 import com.example.hibernatepolymorph.entity.IntegerProperty;
 import com.example.hibernatepolymorph.entity.PropertyRepository;
 import com.example.hibernatepolymorph.entity.StringProperty;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 class PropertyRepositoryTests extends HibernateTest {
+
+    private static final Logger logger = LogManager.getLogger(PropertyHolderTests.class);
+
 
     @Test
     @Order(1)
@@ -17,29 +23,25 @@ class PropertyRepositoryTests extends HibernateTest {
         ageProperty.setId(2L);
         ageProperty.setName("age");
         ageProperty.setValue(23);
-
         save(ageProperty);
-        System.out.printf("Created: %s%n", ageProperty);
+        logger.info("Created: {}", ageProperty);
 
         StringProperty nameProperty = new StringProperty();
         nameProperty.setId(2L);
         nameProperty.setName("name");
         nameProperty.setValue("John Doe");
-
         save(nameProperty);
-        System.out.printf("Created: %s%n", nameProperty);
+        logger.info("Created: {}", nameProperty);
 
         PropertyRepository propertyRepository = new PropertyRepository();
         propertyRepository.setId(1L);
-
         save(propertyRepository);
-        System.out.printf("Created: %s%n", propertyRepository);
+        logger.info("Created: {}", propertyRepository);
 
         propertyRepository.getProperties().add(ageProperty);
         propertyRepository.getProperties().add(nameProperty);
-
         update(propertyRepository);
-        System.out.printf("Updated: %s%n", propertyRepository);
+        logger.info("Updated: {}", propertyRepository);
 
         assertThat(propertyRepository.getId()).isNotNull();
     }
@@ -47,7 +49,7 @@ class PropertyRepositoryTests extends HibernateTest {
     @Test
     @Order(2)
     void verifyRepository() {
-        System.out.printf("Verifying repository %d has two items %n", 1L);
+        logger.info("Verifying repository {} has two items", 1L);
         PropertyRepository propertyRepository = retrieve(PropertyRepository.class, 1L);
         assertThat(propertyRepository.getProperties()).satisfiesExactlyInAnyOrder(
                 age -> {
@@ -68,10 +70,10 @@ class PropertyRepositoryTests extends HibernateTest {
     @Test
     @Order(3)
     void deleteProperty() {
-        System.out.printf("Deleting: IntegerProperty %d%n", 2L);
+        logger.info("Deleting: IntegerProperty {}", 2L);
         delete(IntegerProperty.class, 2L);
 
-        System.out.printf("Verifying repository %d has only one item %n", 1L);
+        logger.info("Verifying repository {} has only one item", 1L);
         PropertyRepository propertyRepository = retrieve(PropertyRepository.class, 1L);
         assertThat(propertyRepository.getProperties()).satisfiesExactlyInAnyOrder(
                 name -> {
