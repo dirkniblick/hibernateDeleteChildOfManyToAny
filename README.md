@@ -102,11 +102,11 @@ assertThat(propertyHolder.getProperty()).isNull(); // FAILS
 }
 ```
 
-✅ What I expect to happen is `StringProperty` #1 is deleted and `PropertyHolder` #1 to still be viable without its property.
+✅ What I expect to happen is the `StringProperty` is deleted and the `PropertyHolder` to still be viable without its property.
 
-⚠️ What happens is `StringProperty` #1 *is* deleted (i.e., its row is removed from the `string_property` table). However, since Hibernate doesn't update the row for `PropertyHolder` #1 in the `property_holder` table, the `EntityManager` returns `null` because `PropertyHolder` still references the deleted `StringProperty`:
+⚠️ What happens is the `StringProperty` *is* deleted (i.e., its row is removed from the `string_property` table). However, since Hibernate doesn't update the row for the `PropertyHolder` in the `property_holder` table, the `EntityManager` returns `null` because `PropertyHolder` still references the deleted `StringProperty`:
 
-> `HHH015013: Returning null (as required by JPA spec) rather than throwing EntityNotFoundException, as the entity (type=com.example.hibernatepolymorph.entity.PropertyHolder, id=1) does not exist`
+> `HHH015013: Returning null (as required by JPA spec) rather than throwing EntityNotFoundException, as the entity (type=com.example.hibernatepolymorph.entity.PropertyHolder, id=32) does not exist`
 
 ### @ManyToAny
 
@@ -173,7 +173,7 @@ And verify the entities involved:
 StringProperty deletedProperty = retrieve(StringProperty.class, NAME_PROPERTY_ID);
 assertThat(deletedProperty).isNull();
 
-PropertyRepository propertyRepository = retrieve(PropertyRepository.class, 1L); // FAILS
+PropertyRepository propertyRepository = retrieve(PropertyRepository.class, PROPERTY_REPOSITORY_ID); // FAILS
 assertThat(propertyRepository.getProperties()).satisfiesExactlyInAnyOrder(
         age -> {
             assertThat(age).isInstanceOf(IntegerProperty.class);
@@ -184,11 +184,11 @@ assertThat(propertyRepository.getProperties()).satisfiesExactlyInAnyOrder(
 );
 ```
 
-✅ What I expect to happen is `IntegerProperty` #2 is deleted and `PropertyRepository` #1 to only be related to `StringProperty` #2.
+✅ What I expect to happen is the `StringProperty` is deleted and the `PropertyRepository` to only be related to the `IntegerProperty`.
 
-⚠️ What happens is `IntegerProperty` #2 *is* deleted (i.e., its row is removed from the `integer_property` table). However, the row in `repository_properties` which relates `PropertyRepository` #1 with `IntegerProperty` #2 is *not* deleted. So, the `EntityManager` throws an exception when trying to retrieve `PropertyRepository` #1:
+⚠️ What happens is the `StringProperty` *is* deleted (i.e., its row is removed from the `string_property` table). However, the row in `repository_properties` which relates the `PropertyRepository` with the `StringProperty` is *not* deleted. So, the `EntityManager` throws an exception when trying to retrieve the `PropertyRepository`:
 
-> `jakarta.persistence.EntityNotFoundException: Unable to find com.example.hibernatepolymorph.entity.IntegerProperty with id 2` 
+> `jakarta.persistence.EntityNotFoundException: Unable to find com.example.hibernatepolymorph.entity.StringProperty with id 21` 
 
 ## Solutions?
 
