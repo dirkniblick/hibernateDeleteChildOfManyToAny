@@ -72,6 +72,17 @@ Now, delete the property:
 
 ```java
 delete(StringProperty.class, NAME_PROPERTY_ID);
+
+...
+
+<T> void delete(Class<T> entityType, Object id) {
+    EntityManager entityManager = getEntityManager();
+    EntityTransaction transaction = entityManager.getTransaction();
+    transaction.begin();
+    T object = entityManager.find(entityType, id);
+    entityManager.remove(object);
+    transaction.commit();
+}
 ```
 
 And verify the entities involved:
@@ -85,15 +96,6 @@ PropertyHolder propertyHolder = retrieve(PropertyHolder.class, PROPERTY_HOLDER_I
 assertThat(propertyHolder.getProperty()).isNull(); // FAILS
 
 ...
-
-<T> void delete(Class<T> entityType, Object id) {
-    EntityManager entityManager = getEntityManager();
-    EntityTransaction transaction = entityManager.getTransaction();
-    transaction.begin();
-    T object = entityManager.find(entityType, id);
-    entityManager.remove(object);
-    transaction.commit();
-}
 
 <T> T retrieve(Class<T> entityType, Object id) {
     return getEntityManager().find(entityType, id);
