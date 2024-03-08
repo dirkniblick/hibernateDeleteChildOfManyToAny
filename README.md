@@ -1,4 +1,4 @@
-# Deleting Children @Any or @ManyToAny Relationships in Hibernate 6
+# Deleting Children of @Any or @ManyToAny Relationships in Hibernate 6
 
 👇 See [update](#update-2024-02-29) for solution.
 
