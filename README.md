@@ -197,7 +197,10 @@ As I said earlier, I've been unable to find much guidance on how to handle these
 ## Update: 2024-02-29
 
 I was able to piece together a solution for Hibernate to execute some code in the event an entity is deleted.
-This was thanks to [the Medium article mentioned above, by Josh Harkema](https://medium.com/@joshuajharkema/spring-boot-hibernate-and-manytoany-orphan-removal-aeb17a457b21), and [a post on Vlad Mihalcea's website](https://vladmihalcea.com/hibernate-event-listeners/):
+This was thanks to [the Medium article mentioned above, by Josh Harkema](https://medium.com/@joshuajharkema/spring-boot-hibernate-and-manytoany-orphan-removal-aeb17a457b21), and [a post on Vlad Mihalcea's website](https://vladmihalcea.com/hibernate-event-listeners/).
+
+ℹ️ To recreate the original problems described above, remove the line(s) containing `hibernate.integrator_provider` from the [`persistence.xml`](./src/main/resources/META-INF/persistence.xml) file.
+
 Create a [`PreDeleteEventListener`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/event/spi/PreDeleteEventListener.html) whose [`onPreDelete()`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/event/spi/PreDeleteEventListener.html#onPreDelete(org.hibernate.event.spi.PreDeleteEvent)) method will handle the [`PreDeleteEvent`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/event/spi/PreDeleteEvent.html) Hibernate issues before deleting an entity.
 
 ```java
