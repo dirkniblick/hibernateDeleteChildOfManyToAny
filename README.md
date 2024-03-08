@@ -1,6 +1,6 @@
 # Deleting Children of @Any or @ManyToAny Relationships in Hibernate 6
 
-👇 See [update](#update-2024-02-29) for solution.
+> 👇 See [update](#update-2024-02-29) for solution.
 
 I'm hoping to get some pointers on how to manage the relationships of entities using Hibernate's [`@Any`](https://docs.jboss.org/hibernate/stable/orm/userguide/html_single/Hibernate_User_Guide.html#associations-any) and [`@ManyToAny`](https://docs.jboss.org/hibernate/stable/orm/userguide/html_single/Hibernate_User_Guide.html#associations-many-to-any), specifically when removing related records. I am currently unable to find guidance in the Hibernate docs and have had limited success elsewhere. Simply put, when I delete "child" records, I don't know how to get Hibernate to manage (i.e., clean up after) the owners of those records.
 
@@ -192,16 +192,15 @@ assertThat(propertyRepository.getProperties()).satisfiesExactlyInAnyOrder(
 
 ## Solutions?
 
-As I said earlier, I've been unable to find much guidance on how to handle these situations. The Hibernate docs show how to _create_ these relationships and entities, but I didn't find anything about _removing them_ where `@Any` or `@ManyToAny` are used. So, **what is the intended or recommended method for having Hibernate cleanup these relationships after or during a delete?** The only other source I've found is [an article from 2019 on Medium](https://medium.com/@joshuajharkema/spring-boot-hibernate-and-manytoany-orphan-removal-aeb17a457b21) which suggests using a PreDeleteEventListener and an Integrator. Is this still a viable solution?
+As I said earlier, I've been unable to find much guidance on how to handle these situations. The Hibernate docs show how to _create_ these relationships and entities, but I didn't find anything about _removing them_ where `@Any` or `@ManyToAny` are used. So, **what is the intended or recommended method for having Hibernate cleanup these relationships after or during a delete?** The only other source I've found is [an article from 2019 on Medium](https://medium.com/@joshuajharkema/spring-boot-hibernate-and-manytoany-orphan-removal-aeb17a457b21) which suggests using a `PreDeleteEventListener` and an `Integrator`. Is this still a viable solution?
 
 ## Update: 2024-02-29
 
+> ℹ️ To recreate the original problems described above, remove the line(s) containing `hibernate.integrator_provider` from the [`persistence.xml`](./src/main/resources/META-INF/persistence.xml) file.
+
 I was able to piece together a solution for Hibernate to execute some code in the event an entity is deleted.
 This was thanks to [the Medium article mentioned above, by Josh Harkema](https://medium.com/@joshuajharkema/spring-boot-hibernate-and-manytoany-orphan-removal-aeb17a457b21), and [a post on Vlad Mihalcea's website](https://vladmihalcea.com/hibernate-event-listeners/).
-
-ℹ️ To recreate the original problems described above, remove the line(s) containing `hibernate.integrator_provider` from the [`persistence.xml`](./src/main/resources/META-INF/persistence.xml) file.
-
-Create a [`PreDeleteEventListener`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/event/spi/PreDeleteEventListener.html) whose [`onPreDelete()`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/event/spi/PreDeleteEventListener.html#onPreDelete(org.hibernate.event.spi.PreDeleteEvent)) method will handle the [`PreDeleteEvent`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/event/spi/PreDeleteEvent.html) Hibernate issues before deleting an entity.
+Start by creating a [`PreDeleteEventListener`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/event/spi/PreDeleteEventListener.html) whose [`onPreDelete()`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/event/spi/PreDeleteEventListener.html#onPreDelete(org.hibernate.event.spi.PreDeleteEvent)) method will handle the [`PreDeleteEvent`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/event/spi/PreDeleteEvent.html) Hibernate issues before deleting an entity.
 
 ```java
 public class ApplicationPreDeleteEventListener implements PreDeleteEventListener {
@@ -266,7 +265,7 @@ public class PropertyEventHandler {
 
 In order to enable this mechanism in the project, the `ApplicationPreDeleteEventListener` needs to be "[integrated](https://docs.jboss.org/hibernate/stable/orm/userguide/html_single/Hibernate_User_Guide.html#bootstrap-event-listener-registration)" into Hibernate.
 
-ℹ️ There may be [other ways of "integrating" event listeners into Hibernate](https://docs.jboss.org/hibernate/stable/orm/userguide/html_single/Hibernate_User_Guide.html#bootstrap-bootstrap-native-registry-BootstrapServiceRegistry-example), but this one works.
+> ℹ️ There may be [other ways of "integrating" event listeners into Hibernate](https://docs.jboss.org/hibernate/stable/orm/userguide/html_single/Hibernate_User_Guide.html#bootstrap-bootstrap-native-registry-BootstrapServiceRegistry-example), but this one worked for me.
 
 Create an implementation of [`Integrator`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/integrator/spi/Integrator.html):
 
@@ -292,7 +291,7 @@ public class ApplicationIntegrator implements Integrator {
 }
 ```
 
-ℹ️ The `@UnknownKeyFor`, `@NonNull` and `@Initialized` annotations on the `integrate()` method are from the `org.checkerframework:checker-qual` package, which is necessary to create an `Integrator`.
+> ℹ️ The `@UnknownKeyFor`, `@NonNull` and `@Initialized` annotations on the `integrate()` method are from the `org.checkerframework:checker-qual` package, which is necessary to create an `Integrator`.
 
 Next, create an implementation of [`IntegratorProvider`](https://docs.jboss.org/hibernate/orm/6.4/javadocs/org/hibernate/jpa/boot/spi/IntegratorProvider.html):
 
@@ -327,10 +326,10 @@ If using Spring Boot, append this to the `application.properties`:
 spring.jpa.properties.hiberrnate.integrator_provider=package.name.to.ApplicationIntegratorProvider
 ```
 
-Now, all of the project's tests perform as expected.
+Now, all of the project's tests perform as expected. 🎉
 
 ### Final notes
 
 This project was built using Hibernate 6.4 and should also contain examples for everything needed to effectively utilize Hibernate's @Any and @ManyToAny relationships. Theoretically, it should work back to 6.0, but I would advise using 6.2.8Final or higher to avoid bugs with [@Any and @ManyToAny associations](https://discourse.hibernate.org/t/any-and-manytoany-associations-fail-in-spring-boot-3/7576/18) and [using meta-annotations](https://discourse.hibernate.org/t/meta-annotation-anydiscriminatorvalue-does-not-work/7242/5).
 
-⚠️ However, if using Hibernate 5, [quite a lot of things need to change](./README_HIBERNATE_5.md).
+⚠️ If using Hibernate 5 however, [quite a lot of things need to change](./README_HIBERNATE_5.md).
