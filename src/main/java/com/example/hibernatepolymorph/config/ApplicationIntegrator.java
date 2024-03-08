@@ -22,7 +22,7 @@ public class ApplicationIntegrator implements Integrator {
         final EventListenerRegistry eventListenerRegistry =
                 sessionFactory.getServiceRegistry().getService(EventListenerRegistry.class);
 
-        eventListenerRegistry.appendListeners(EventType.PRE_DELETE, ApplicationPreDeleteEventListener.INSTANCE);
+        eventListenerRegistry.appendListeners(EventType.PRE_DELETE, new ApplicationPreDeleteEventListener());
     }
 
     @Override

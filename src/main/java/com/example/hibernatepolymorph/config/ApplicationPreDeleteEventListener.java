@@ -8,20 +8,18 @@ import org.hibernate.event.spi.PreDeleteEventListener;
 
 public class ApplicationPreDeleteEventListener implements PreDeleteEventListener {
 
-    public static final ApplicationPreDeleteEventListener INSTANCE = new ApplicationPreDeleteEventListener();
-
     private final PropertyEventHandler propertyEventHandler = new PropertyEventHandler();
 
 
     @Override
     public boolean onPreDelete(PreDeleteEvent event) {
         Object entity = event.getEntity();
+        boolean veto = entity == null;
 
-        if (entity instanceof Property<?> property) {
-            return propertyEventHandler.preDelete(property, event);
-
-        } else {
-            return false;
+        if (! veto && entity instanceof Property<?> property) {
+            veto = propertyEventHandler.preDelete(property, event.getSession());
         }
+
+        return veto;
     }
 }

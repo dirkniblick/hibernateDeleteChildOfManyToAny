@@ -1,16 +1,12 @@
 package com.example.hibernatepolymorph.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import org.hibernate.annotations.AnyDiscriminator;
-import org.hibernate.annotations.AnyDiscriminatorValue;
-import org.hibernate.annotations.AnyKeyJavaClass;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ManyToAny;
@@ -29,11 +25,8 @@ public class PropertyRepository {
     private Long id;
 
     @ManyToAny
-    @AnyDiscriminator(DiscriminatorType.STRING)
+    @PropertyDiscriminator
     @Column(name = "property_type", columnDefinition = "varchar(1) not null check (property_type in ('S','I'))")
-    @AnyKeyJavaClass(Long.class)
-    @AnyDiscriminatorValue(discriminator = StringProperty.DISCRIMINATOR, entity = StringProperty.class)
-    @AnyDiscriminatorValue(discriminator = IntegerProperty.DISCRIMINATOR, entity = IntegerProperty.class)
     @Cascade(CascadeType.ALL)
     @JoinTable(name = "repository_properties",
             joinColumns = @JoinColumn(name = "repository_id", nullable = false),
